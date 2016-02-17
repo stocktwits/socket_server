@@ -1,0 +1,17 @@
+{
+  "name": "socket_server",
+  "version": "1.0.0",
+  "description": "Manages sockets for pushing real time data to StockTwits clients",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eric Alford",
+  "license": "ISC",
+  "dependencies": {
+    "express": "*",
+    "sockjs": "*",
+    "hiredis": "*",
+    "redis": "*"
+  }
+}
