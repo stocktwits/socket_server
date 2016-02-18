@@ -2,20 +2,21 @@ var express = require('express');
 var sockjs  = require('sockjs');
 var http    = require('http');
 var redis   = require('redis');
-var url = require('url');
+var url     = require('url');
 
 var sockjs_opts = {sockjs_url: "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js"};
 var sockjs_chat = sockjs.createServer(sockjs_opts);
 
 sockjs_chat.on('connection', function(conn) {
   var params = url.parse(conn.url, true).query;
-  console.log(params.token);
+  var user_id = params.user_id;
+  var recipient_user_id = params.recipient_user_id;
+  var channel_key = [user_id, recipient_user_id].sort().join('_');
   var browser = redis.createClient();
-  browser.subscribe('chat_channel');
+  browser.subscribe(channel_key);
 
   // When we see a message on chat_channel, send it to the browser
   browser.on("message", function(channel, message){
-    console.log(message);
     conn.write(message);
   });
 
