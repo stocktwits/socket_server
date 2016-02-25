@@ -9,3 +9,6 @@ app has to be stateless, otherwise you will start to get funky behavior and unex
 Reached over 140k socket connections without redis subscriptions.
 Reached 48k socket connections with each connection subscribing to redis. Once this needs to be scaled up, we can reach
 more connections by adding more redis slaves.
+
+Each app instance needs to run on its own port and load balanced to attain session affinity. Attained by JSESSIONID
+cookie or by the SSL connection.
