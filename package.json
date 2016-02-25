@@ -12,6 +12,7 @@
     "express": "*",
     "sockjs": "*",
     "hiredis": "*",
-    "redis": "*"
+    "redis": "*",
+    "jsonwebtoken": "*"
   }
 }
