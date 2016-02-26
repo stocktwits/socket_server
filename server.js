@@ -15,28 +15,34 @@ nconf.argv().env().file({ file: './config.json' });
 sockjs_chat.on('connection', function(conn) {
   var params = url.parse(conn.url, true).query;
 
-  //jwt.verify(params.token, app.get('superSecret'), function(err, decoded) {
-  //  if (err) {
-  //    return res.json({ success: false, message: 'Failed to authenticate token.' });
-  //  } else {
-  //    // if everything is good, save to request for use in other routes
-  //    req.decoded = decoded;
-  //    next();
-  //  }
-  //});
+  jwt.verify(params.token, nconf.get('jwt:private_key'), function(err, decoded) {
+    if (err) {
+      conn.write("Failed to authenticate token.");
+      conn.close();
+    }
+    else{
+      //var user_id = params.user_id;
+      var user_id = decoded.user_id;
+      if(user_id) {
+        var channel_key = ["socket", user_id].join('_');
+        var browser = redis.createClient(nconf.get('redis:port'), nconf.get('redis:host'));
+        browser.subscribe(channel_key);
 
-  var user_id = params.user_id;
-  var channel_key = ["socket",  user_id].join('_');
-  var browser = redis.createClient(nconf.get('redis:port'), nconf.get('redis:host'));
-  browser.subscribe(channel_key);
+        // When we see a message on the user's channel, send it to the browser
+        browser.on("message", function (channel, message) {
+          conn.write(message);
+        });
 
-  // When we see a message on the user's channel, send it to the browser
-  browser.on("message", function(channel, message){
-    conn.write(message);
-  });
-
-  conn.on('close', function() {
-    browser.quit();
+        conn.on('close', function () {
+          console.log("Connection closed");
+          browser.quit(); //Get rid of the redis connection
+        });
+      }
+      else{
+        conn.write("Missing user id.");
+        conn.close();
+      }
+    }
   });
 });
 
