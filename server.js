@@ -10,6 +10,17 @@ var sockjs_chat = sockjs.createServer(sockjs_opts);
 
 sockjs_chat.on('connection', function(conn) {
   var params = url.parse(conn.url, true).query;
+
+  //jwt.verify(params.token, app.get('superSecret'), function(err, decoded) {
+  //  if (err) {
+  //    return res.json({ success: false, message: 'Failed to authenticate token.' });
+  //  } else {
+  //    // if everything is good, save to request for use in other routes
+  //    req.decoded = decoded;
+  //    next();
+  //  }
+  //});
+
   var user_id = params.user_id;
   var channel_key = ["socket",  user_id].join('_');
   var browser = redis.createClient("6379", "52.36.195.150");
