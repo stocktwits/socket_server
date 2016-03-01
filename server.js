@@ -30,7 +30,9 @@ sockjs_chat.on('connection', function(conn) {
 
         // When we see a message on the user's channel, send it to the browser
         browser.on("message", function (channel, message) {
-          conn.write(message);
+          if(message != 1) {  //A 1 is sent to see if the user is online
+            conn.write(message);
+          }
         });
 
         conn.on('close', function () {
